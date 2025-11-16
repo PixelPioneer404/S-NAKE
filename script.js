@@ -10,6 +10,13 @@ const pauseBtn = document.querySelector('#paused-btn')
 const resumeBtn = document.querySelector('#resume-btn')
 const infoModal = document.querySelector('#info-modal')
 const closeInfoBtn = document.querySelector('#close-info-btn')
+const settingBtn = document.querySelector('#settings-btn')
+const closeSettingsBtn = document.querySelector('#close-setting-btn')
+const settingsModal = document.querySelector('#settings-modal')
+const speedIncBtn = document.querySelector('#speed-inc-btn')
+const speedMeter = document.querySelector('#speed-o-meter')
+const speedDecBtn = document.querySelector('#speed-dec-btn')
+const gridSwitch = document.querySelector('#grid-switch')
 
 let score = 0
 let highScore = parseInt(localStorage.getItem('highScore')) || 0
@@ -52,6 +59,10 @@ for (let row = 0; row < rows; row++) {
     }
 }
 
+let currentSpeed = 200
+let snakeSpeeds = [300, 200, 100, 50]
+let speedLevel = 3
+
 let snake = null
 const handleSnake = (function () {
     return {
@@ -77,7 +88,7 @@ handleSnake.setSnake()
 
 let renderInterval = null
 let direction = 'left'
-let fruit = { x: Math.floor(Math.random() * rows), y: Math.floor(Math.random() * cols) }
+let fruit = generateRandomFood()
 
 let isAlertOpen = false
 let isStarted = false //auto stop start at the beginning
@@ -90,7 +101,8 @@ if (isInfoOpen === null) {
 } else {
     isInfoOpen = JSON.parse(isInfoOpen)
 }
-console.log(isInfoOpen)
+let isSettingsOpen = false
+
 function openAlert() {
     if (isAlertOpen) {
         clearInterval(renderInterval)
@@ -153,6 +165,7 @@ function restartGame() {
     currentScoreEl.textContent = `Score: ${score}`
     isPaused = false
     isStarted = false
+    resetTimer()
     closePausedModal()
     snake.forEach((snakeCell) => {
         boardGrid[`${snakeCell.x}-${snakeCell.y}`]?.classList.remove('fill')
@@ -164,6 +177,8 @@ function restartGame() {
     timerInterval = setInterval(() => {
         runTimer()
     }, 1000)
+    pauseBtn.classList.remove('opacity-100', 'pointer-events-auto')
+    pauseBtn.classList.add('opacity-50', 'pointer-events-none')
     direction = 'left' //reset the direction
     document.addEventListener('keydown', (e) => {
         // runTimer()
@@ -172,7 +187,7 @@ function restartGame() {
                 isStarted = true
                 renderInterval = setInterval(() => {
                     render()
-                }, 200)
+                }, currentSpeed)
             }
         }
     })
@@ -201,7 +216,7 @@ function resumeGame() {
     setTimeout(() => {
         renderInterval = setInterval(() => {
             render()
-        }, 200)
+        }, currentSpeed)
         timerInterval = setInterval(() => {
             runTimer()
         }, 1000)
@@ -216,12 +231,51 @@ function resetTimer() {
     min = 0
 }
 
+function openSettings() {
+    clearInterval(renderInterval)
+    clearInterval(timerInterval)
+    isSettingsOpen = true
+    settingBtn.classList.remove('opacity-100', 'pointer-events-auto')
+    settingBtn.classList.add('opacity-50', 'pointer-events-none')
+    settingsModal.classList.remove('opacity-0', 'translate-x-[150%]')
+    settingsModal.classList.add('opacity-100', 'translate-0')
+}
+
+function closeSettings() {
+    isSettingsOpen = false
+    settingBtn.classList.remove('opacity-50', 'pointer-events-none')
+    settingBtn.classList.add('opacity-100', 'pointer-events-auto')
+    settingsModal.classList.remove('opacity-100', 'translate-0')
+    settingsModal.classList.add('opacity-0', 'translate-x-[150%]')
+    if (isStarted) {
+        setTimeout(() => {
+            renderInterval = setInterval(() => {
+                render()
+            }, currentSpeed)
+            timerInterval = setInterval(() => {
+                runTimer()
+            }, 1000)
+        }, 300)
+    }
+}
+
 restartBtn.forEach((btn) => {
     btn.addEventListener('click', restartGame)
 })
 pauseBtn.addEventListener('click', pauseGame)
 resumeBtn.addEventListener('click', resumeGame)
 closeInfoBtn.addEventListener('click', closeInfoBox)
+settingBtn.addEventListener('click', openSettings)
+closeSettingsBtn.addEventListener('click', closeSettings)
+
+function generateRandomFood() {
+    let newFruit
+    do {
+        newFruit = { x: Math.floor(Math.random() * rows), y: Math.floor(Math.random() * cols) }
+    } while (snake && snake.some(segment => segment.x === newFruit.x && segment.y === newFruit.y))
+
+    return newFruit
+}
 
 function render() {
     //snake
@@ -260,7 +314,7 @@ function render() {
         score += 10
         currentScoreEl.textContent = `Score: ${score}`
         boardGrid[`${fruit.x}-${fruit.y}`].classList.remove('fruit')
-        fruit = { x: Math.floor(Math.random() * rows), y: Math.floor(Math.random() * cols) }
+        fruit = generateRandomFood()
         boardGrid[`${fruit.x}-${fruit.y}`].classList.add('fruit')
         snake.unshift({ x: fruit.x, y: fruit.y })
     }
@@ -289,25 +343,28 @@ function render() {
 }
 
 document.addEventListener('keydown', (e) => {
-    if (!isPaused) {
+    if (!isPaused && !isSettingsOpen) {
         if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
             if (!isStarted) {
                 isStarted = true
                 renderInterval = setInterval(() => {
                     render()
-                }, 200)
+                }, currentSpeed)
             }
         }
 
-        if (e.key === 'ArrowUp') direction = 'up'
-        else if (e.key === 'ArrowDown') direction = 'down'
-        else if (e.key === 'ArrowLeft') direction = 'left'
-        else if (e.key === 'ArrowRight') direction = 'right'
+        if (e.key === 'ArrowUp' && direction !== 'down') direction = 'up'
+        else if (e.key === 'ArrowDown' && direction !== 'up') direction = 'down'
+        else if (e.key === 'ArrowLeft' && direction !== 'right') direction = 'left'
+        else if (e.key === 'ArrowRight'&& direction !== 'left') direction = 'right'
     }
-    if (e.key === 'Escape' && isStarted) {
-        if (!isPaused) {
+    if (e.key === 'Escape') {
+        if (!isPaused && !isSettingsOpen) {
             pauseGame()
             isPaused = true
+        } else if (isSettingsOpen) {
+            closeSettings()
+            isSettingsOpen = false
         } else {
             resumeGame()
             isPaused = false
@@ -317,7 +374,51 @@ document.addEventListener('keydown', (e) => {
         if (isPaused) resumeGame()
         else if (isAlertOpen) restartGame()
     }
+    if (e.key === 'Tab') e.preventDefault()
 })
 
 // Initial render to show the snake
 render()
+
+function increaseSnakeSpeed() {
+    speedLevel++
+    if (speedLevel > 4) speedLevel = 4
+    speedMeter.textContent = speedLevel
+    currentSpeed = snakeSpeeds[speedLevel - 1]
+    console.log(currentSpeed)
+}
+function decreaseSnakeSpeed() {
+    speedLevel--
+    if (speedLevel < 1) speedLevel = 1
+    speedMeter.textContent = speedLevel
+    currentSpeed = snakeSpeeds[speedLevel - 1]
+    console.log(currentSpeed)
+}
+
+speedIncBtn.addEventListener('click', increaseSnakeSpeed)
+speedDecBtn.addEventListener('click', decreaseSnakeSpeed)
+
+let boardCells = null
+document.addEventListener('DOMContentLoaded', () => {
+    boardCells = document.querySelectorAll('.cell')
+    // Call toggleGrid on page load to set initial state
+    toggleGrid()
+})
+
+function toggleGrid() {
+    if (!boardCells) return // Safety check
+
+    if (gridSwitch.checked === true) {
+        // Show grid borders
+        boardCells.forEach(cell => {
+            cell.style.border = "0.5px solid rgba(255, 255, 255, 0.2)"
+        })
+    } else {
+        // Hide grid borders
+        boardCells.forEach(cell => {
+            cell.style.border = "0.5px solid transparent"
+        })
+    }
+}
+
+gridSwitch.addEventListener('change', toggleGrid)

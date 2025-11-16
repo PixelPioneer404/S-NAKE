@@ -4,12 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JS Snake Game</title>
+    <title>S_NAKE - The Classic Snake Game</title>
     <link rel="stylesheet" href="output.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet" />
+    <link rel="shortcut icon" href="./assets/circular-logo.png" type="image/png">
 </head>
 
-<body class="overflow-hidden">
+<body class="overflow-hidden select-none">
     <!-- <div class=""></div> for mobile users a beautiful message that responsveness is yet to come, enjoy in desktop -->
     <div id="modal-bg"
         class="opacity-0 pointer-events-none transition-all duration-300 ease-in-out w-screen h-screen z-999 fixed bg-black/40 backdrop-blur-sm flex justify-center items-center">
@@ -38,12 +39,85 @@
                     class="ri-reset-right-fill text-black"></i>Restart</button>
         </div>
     </div>
+    <!-- menu modal -->
+    <div id="settings-modal"
+        class="opacity-0 translate-x-[150%] hide-scrollbar overflow-y-auto transition-all duration-300 ease-in-out absolute bottom-10 right-10 z-9999 w-[20vw] h-[60vh] bg-black shadow rounded-4xl border border-white/30 overflow-hidden">
+        <div class="sticky top-0 bg-black z-20 p-5 pb-0">
+            <button id="close-setting-btn"
+                class="absolute top-6 right-6 w-10 h-10 rounded-full border border-white/30 flex items-center justify-center cursor-pointer transition-all duration-200 hover:border-white/50">
+                <i class="ri-close-line text-white text-xl"></i>
+            </button>
+            <p class="text-center font-mono text-white text-2xl tracking-widest flex gap-2 justify-center pt-7 pb-3">
+                <i class="ri-settings-2-line text-white"></i>Settings
+            </p>
+        </div>
+        <div class="flex flex-col gap-8 justify-start items-center p-5 pt-5">
+            <ul class="list-none w-full flex flex-col gap-4 justify-start items-center">
+                <li class="flex flex-row justify-between items-center w-full bg-white/10 rounded-xl px-5 py-3">
+                    <div class="flex flex-col gap-0.5">
+                        <h2 class="font-mono font-medium text-white text-base">Snake Speed</h2>
+                        <p class="font-sans font-normal text-white/60 text-[10px] text-wrap w-[90%]">Change the speed of
+                            the snake. 1 is slowest, 4 is the heighest, default 3</p>
+                    </div>
+                    <div class="flex flex-row gap-4 items-center">
+                        <button id="speed-dec-btn"
+                            class="cursor-pointer w-8 h-8 rounded-full border border-white/80 hover:border-white transition-all duration-300 ease-in-out"><i
+                                class="ri-subtract-line text-white"></i></button>
+                        <p id="speed-o-meter" class="text-2xl font-mono font-normal text-white">3</p>
+                        <button id="speed-inc-btn"
+                            class="cursor-pointer w-8 h-8 rounded-full border border-white/80 hover:border-white transition-all duration-300 ease-in-out"><i
+                                class="ri-add-line text-white"></i></button>
+                    </div>
+                </li>
+                <li class="flex flex-row justify-between items-center w-full bg-white/10 rounded-xl px-5 py-3">
+                    <div class="flex flex-col gap-0.5">
+                        <h2 class="font-mono font-medium text-white text-base">Board Grid</h2>
+                        <p class="font-sans font-normal text-white/60 text-[10px] text-wrap w-full">Trun on/off the
+                            grid of the gameboard</p>
+                    </div>
+                    <div class="flex flex-row justify-center items-center">
+                        <div class="relative w-[51px] h-[31px]">
+                            <input id="grid-switch" type="checkbox" class="toggle-checkbox peer absolute opacity-0 w-0 h-0" checked>
+                            <label
+                                class="toggle-label block w-full h-full bg-transparent border border-white rounded-2xl cursor-pointer transition-all duration-200 ease-out peer-checked:bg-[#D71921] peer-checked:border-[#D71921]"
+                                for="grid-switch">
+                                <span
+                                    class="toggle-slider absolute w-[27px] h-[27px] rounded-full bg-white shadow-[0px_3px_8px_rgba(0,0,0,0.15),0px_3px_1px_rgba(0,0,0,0.06)] transition-all duration-200 ease-out cursor-pointer"></span>
+                            </label>
+                        </div>
+                    </div>
+                </li>
+                <li class="flex flex-row justify-between items-center w-full bg-white/10 rounded-xl px-5 py-3">
+                    <div class="flex flex-col gap-0.5">
+                        <h2 class="font-mono font-medium text-white text-base">Reset High Score</h2>
+                        <p class="font-sans font-normal text-white/60 text-[10px] text-wrap w-[90%]">Reset the high
+                            score to 0</p>
+                    </div>
+                    <button
+                        class="cursor-pointer px-5 py-2 rounded-xl border border-white/60 text-white font-mono text-sm font-medium hover:border-white transition-all duration-300 ease-in-out">
+                        Reset
+                    </button>
+                </li>
+                <li class="w-[90%] h-0.5 bg-white/10 mt-3"></li>
+                <li class="w-full flex flex-col justify-start mt-2 gap-4">
+                    <div class="flex flex-row items-center justify-between w-full">
+                        <h2 class="font-mono font-medium text-white text-base px-2 flex gap-1.5"><i
+                                class="ri-history-line text-white -translate-y-0.5"></i>History</h2>
+                        <button
+                            class="-translate-y-0.5 -translate-x-2 px-3 py-1 rounded-full bg-white/20 hover:bg-white/30 transition-all duration-300 ease-in-out cursor-pointer text-white font-mono text-[12px] font-medium">Clear</button>
+                    </div>
+                    <div class="w-full rounded-2xl bg-white/10 h-[40vh]"></div>
+                </li>
+            </ul>
+        </div>
+    </div>
     <!-- info modal -->
     <div id="info-modal"
         class="opacity-0 pointer-events-none scale-70 transition-all duration-300 ease-in-out fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-9999 p-8 w-[60vw] h-[75vh] bg-black shadow rounded-4xl border border-white/30 flex flex-col overflow-y-auto">
-        
+
         <!-- Close Button -->
-        <button id="close-info-btn" class="absolute top-6 right-6 w-10 h-10 rounded-full border border-white/30 flex items-center justify-center cursor-pointer transition-all duration-200 hover:border-white/50">
+        <button id="close-info-btn"
+            class="absolute top-6 right-6 w-10 h-10 rounded-full border border-white/30 flex items-center justify-center cursor-pointer transition-all duration-200 hover:border-white/50">
             <i class="ri-close-line text-white text-xl"></i>
         </button>
 
@@ -51,7 +125,7 @@
         <div class="flex flex-col items-center gap-3 mb-6">
             <div class="flex items-center gap-3">
                 <i class="ri-gamepad-line text-white text-3xl"></i>
-                <h1 class="font-mono text-white text-3xl tracking-widest">Snake Game</h1>
+                <h1 class="font-mono text-white text-3xl tracking-widest">S-NAKE</h1>
             </div>
             <p class="font-mono text-white/80 text-sm text-center">
                 Welcome to the classic Snake experience. Clean, minimal, and addictive.
@@ -66,7 +140,7 @@
                     <i class="ri-keyboard-line"></i>
                     Game Controls
                 </h2>
-                
+
                 <!-- Movement Controls -->
                 <div class="space-y-3 mb-4">
                     <h3 class="font-mono text-white/90 text-base">Movement</h3>
@@ -130,21 +204,24 @@
                             <i class="ri-trophy-line text-yellow-400 text-sm"></i>
                             High Score
                         </h3>
-                        <p class="font-mono text-white/70 text-xs">Your best score is saved locally and persists across sessions</p>
+                        <p class="font-mono text-white/70 text-xs">Your best score is saved locally and persists across
+                            sessions</p>
                     </div>
                     <div class="space-y-2">
                         <h3 class="font-mono text-white/90 text-base flex items-center gap-2">
                             <i class="ri-medal-line text-green-400 text-sm"></i>
                             Current Score
                         </h3>
-                        <p class="font-mono text-white/70 text-xs">Points earned by eating food. Each food gives +10 points</p>
+                        <p class="font-mono text-white/70 text-xs">Points earned by eating food. Each food gives +10
+                            points</p>
                     </div>
                     <div class="space-y-2">
                         <h3 class="font-mono text-white/90 text-base flex items-center gap-2">
                             <i class="ri-time-line text-blue-400 text-sm"></i>
                             Timer
                         </h3>
-                        <p class="font-mono text-white/70 text-xs">Tracks how long you've been playing in MM-SS format</p>
+                        <p class="font-mono text-white/70 text-xs">Tracks how long you've been playing in MM-SS format
+                        </p>
                     </div>
                 </div>
             </div>
@@ -192,9 +269,15 @@
                 class="-translate-x-2/3 px-3 h-10 flex justify-center items-center border border-white/20 text-white text-base font-mono font-medium rounded-[5px]">
                 Time:
                 00-00</div>
-            <button id="paused-btn"
-                class="opacity-50 pointer-events-none transition-all duration-300 ease-in-out flex justify-center items-center rounded-[5px] w-10 h-10 cursor-pointer border border-white/20"><i
-                    class="ri-pause-large-line text-white"></i></button>
+            <div class="flex flex-row justify-center items-center gap-6">
+                <button id="settings-btn"
+                    class="opacity-100 pointer-events-auto transition-all duration-300 ease-in-out flex justify-center items-center rounded-[5px] w-10 h-10 cursor-pointer border border-white/20">
+                    <i class="ri-settings-2-line text-white text-xl"></i>
+                </button>
+                <button id="paused-btn"
+                    class="opacity-50 pointer-events-none transition-all duration-300 ease-in-out flex justify-center items-center rounded-[5px] w-10 h-10 cursor-pointer border border-white/20"><i
+                        class="ri-pause-large-line text-white text-xl"></i></button>
+            </div>
         </div>
         <div id="board"
             class="overflow-hidden w-[calc(100vw-120px)] h-[calc(100vh-184px)] rounded-[5px] border border-white/20 grid grid-cols-[repeat(auto-fill,minmax(50px,1fr))] grid-rows-[repeat(auto-fill,minmax(50px,1fr))]">
