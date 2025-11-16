@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+html,body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.cell {
+    width: 50px;
+    height: 50px;
+    border: 0.5px solid rgba(255, 255, 255, 0.2) 
+}
+
+.fill {
+    background-color: #f6f6f6;
+}
+
+.fruit {
+    background-color: #D71921;
+}
