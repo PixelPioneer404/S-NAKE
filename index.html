@@ -54,6 +54,38 @@
         <div id="modal-bg"
         class="opacity-0 pointer-events-none transition-all duration-300 ease-in-out w-screen h-screen z-999 fixed bg-black/40 backdrop-blur-sm flex justify-center items-center">
     </div>
+    
+    <!-- Arrow Key Prompt -->
+    <div id="arrow-key-prompt"
+        class="opacity-0 pointer-events-none transition-all duration-300 ease-in-out fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-9999 text-center">
+        <div class="bg-black/80 backdrop-blur-md border border-white/30 rounded-3xl p-8 shadow-2xl">
+            <div class="flex items-center justify-center gap-3 mb-6">
+                <i class="ri-gamepad-line text-white text-3xl"></i>
+                <h2 class="font-mono text-white text-2xl tracking-widest">Ready to Play?</h2>
+            </div>
+            
+            <p class="font-mono text-white/80 text-lg mb-6">Press any arrow key to start the game</p>
+            
+            <div class="flex justify-center items-center gap-3 mb-4">
+                <div class="w-10 h-10 border-2 border-white/40 rounded-lg flex items-center justify-center">
+                    <i class="ri-arrow-up-line text-white text-lg"></i>
+                </div>
+                <div class="w-10 h-10 border-2 border-white/40 rounded-lg flex items-center justify-center">
+                    <i class="ri-arrow-down-line text-white text-lg"></i>
+                </div>
+                <div class="w-10 h-10 border-2 border-white/40 rounded-lg flex items-center justify-center">
+                    <i class="ri-arrow-left-line text-white text-lg"></i>
+                </div>
+                <div class="w-10 h-10 border-2 border-white/40 rounded-lg flex items-center justify-center">
+                    <i class="ri-arrow-right-line text-white text-lg"></i>
+                </div>
+            </div>
+            
+            <p class="font-mono text-white/60 text-sm">
+                Use arrow keys to control your snake
+            </p>
+        </div>
+    </div>
     <!-- alert -->
     <div id="alert-modal"
         class="opacity-0 pointer-events-none scale-60 transition-all duration-300 ease-in-out fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-9999 p-5 w-[35vw] h-[45vh] bg-black shadow rounded-4xl border border-white/30 flex flex-col justify-center items-center gap-18 pt-20">
@@ -336,7 +368,7 @@
             </div>
         </div>
         <div id="board"
-            class="overflow-hidden w-[calc(100vw-120px)] h-[calc(100vh-184px)] rounded-[5px] border border-white/20 grid grid-cols-[repeat(auto-fill,minmax(50px,1fr))] grid-rows-[repeat(auto-fill,minmax(50px,1fr))]">
+            class="overflow-hidden w-[calc(100vw-120px)] h-[calc(100vh-184px)] rounded-[30px] border border-white/20 grid grid-cols-[repeat(auto-fill,minmax(50px,1fr))] grid-rows-[repeat(auto-fill,minmax(50px,1fr))]">
         </div>
     </div>
     </div> <!-- End Desktop Content Wrapper -->

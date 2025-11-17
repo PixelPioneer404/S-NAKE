@@ -20,6 +20,7 @@ const gridSwitch = document.querySelector('#grid-switch')
 const hsResetBtn = document.querySelector('#hs-reset-btn')
 const historyList = document.querySelector('#history-list')
 const clearHistoryBtn = document.querySelector('#clear-history-btn')
+const arrowKeyPrompt = document.querySelector('#arrow-key-prompt')
 
 let score = 0
 let highScore = parseInt(localStorage.getItem('highScore')) || 0
@@ -96,13 +97,17 @@ let fruit = generateRandomFood()
 let isAlertOpen = false
 let isStarted = false //auto stop start at the beginning
 let isPaused = false //done by user (only)
-let isInfoOpen = sessionStorage.getItem('isInfoOpen')
-if (isInfoOpen === null) {
+let isFirstVisit = sessionStorage.getItem('firstVisit')
+let isInfoOpen = false
+let isArrowPromptOpen = false
+
+if (isFirstVisit === null) {
+    // First time visit - show info modal first
     isInfoOpen = true
     openInfoBox()
-    sessionStorage.setItem('isInfoOpen', true)
 } else {
-    isInfoOpen = JSON.parse(isInfoOpen)
+    // Not first visit - don't show anything
+    isFirstVisit = JSON.parse(isFirstVisit)
 }
 let isSettingsOpen = false
 
@@ -143,8 +148,6 @@ function closePausedModal() {
 
 function openInfoBox() {
     if (isInfoOpen) {
-        isInfoOpen = true
-        sessionStorage.setItem('isInfoOpen', isInfoOpen)
         modalBG.classList.remove('opacity-0', 'pointer-events-none')
         modalBG.classList.add('opacity-100', 'pointer-events-auto')
         setTimeout(() => {
@@ -156,11 +159,33 @@ function openInfoBox() {
 
 function closeInfoBox() {
     isInfoOpen = false
-    sessionStorage.setItem('isInfoOpen', isInfoOpen)
-    modalBG.classList.remove('opacity-100', 'pointer-events-auto')
-    modalBG.classList.add('opacity-0', 'pointer-events-none')
     infoModal.classList.remove('opacity-100', 'pointer-events-auto', 'scale-100')
     infoModal.classList.add('opacity-0', 'pointer-events-none', 'scale-70')
+    
+    // After info box closes, show arrow key prompt
+    setTimeout(() => {
+        showArrowKeyPrompt()
+    }, 300)
+}
+
+function showArrowKeyPrompt() {
+    isArrowPromptOpen = true
+    // Modal background stays visible
+    arrowKeyPrompt.classList.remove('opacity-0', 'pointer-events-none')
+    arrowKeyPrompt.classList.add('opacity-100', 'pointer-events-auto')
+}
+
+function hideArrowKeyPrompt() {
+    isArrowPromptOpen = false
+    arrowKeyPrompt.classList.remove('opacity-100', 'pointer-events-auto')
+    arrowKeyPrompt.classList.add('opacity-0', 'pointer-events-none')
+    
+    // Hide modal background completely
+    modalBG.classList.remove('opacity-100', 'pointer-events-auto')
+    modalBG.classList.add('opacity-0', 'pointer-events-none')
+    
+    // Mark as not first visit
+    sessionStorage.setItem('firstVisit', false)
 }
 
 function restartGame() {
@@ -183,17 +208,6 @@ function restartGame() {
     pauseBtn.classList.remove('opacity-100', 'pointer-events-auto')
     pauseBtn.classList.add('opacity-50', 'pointer-events-none')
     direction = 'left' //reset the direction
-    document.addEventListener('keydown', (e) => {
-        // runTimer()
-        if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-            if (!isStarted) {
-                isStarted = true
-                renderInterval = setInterval(() => {
-                    render()
-                }, currentSpeed)
-            }
-        }
-    })
     render()
     if (isAlertOpen) {
         isAlertOpen = false
@@ -472,7 +486,22 @@ function render() {
 }
 
 document.addEventListener('keydown', (e) => {
-    if (!isPaused && !isSettingsOpen) {
+    // Handle arrow key prompt first
+    if (isArrowPromptOpen && (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+        hideArrowKeyPrompt()
+        isStarted = true
+        renderInterval = setInterval(() => {
+            render()
+        }, currentSpeed)
+        // Start timer when game starts
+        clearInterval(timerInterval)
+        timerInterval = setInterval(() => {
+            runTimer()
+        }, 1000)
+        return // Exit early, don't process other game logic
+    }
+    
+    if (!isPaused && !isSettingsOpen && !isArrowPromptOpen) {
         if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
             if (!isStarted) {
                 isStarted = true
