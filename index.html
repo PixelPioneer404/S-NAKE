@@ -4,15 +4,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>S_NAKE - The Classic Snake Game</title>
+    <title>S-NAKE - The Classic Snake Game</title>
     <link rel="stylesheet" href="output.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet" />
     <link rel="shortcut icon" href="./assets/circular-logo.png" type="image/png">
 </head>
 
 <body class="overflow-hidden select-none">
-    <!-- <div class=""></div> for mobile users a beautiful message that responsveness is yet to come, enjoy in desktop -->
-    <div id="modal-bg"
+    <!-- Mobile Overlay - Shows only on mobile devices -->
+    <div class="fixed inset-0 bg-black z-10000 flex flex-col justify-center items-center px-6 text-center md:hidden">
+        <div class="mb-8">
+            <div class="flex items-center justify-center gap-3 mb-4">
+                <i class="ri-gamepad-line text-white text-4xl"></i>
+                <h1 class="font-mono text-white text-4xl tracking-widest">S-NAKE</h1>
+            </div>
+            <div class="w-16 h-0.5 bg-white/40 mx-auto"></div>
+        </div>
+        
+        <div class="space-y-6 max-w-sm">
+            <div class="text-center">
+                <i class="ri-smartphone-line text-white/60 text-5xl mb-4"></i>
+                <h2 class="font-mono text-white text-xl tracking-wide mb-3">Mobile Version</h2>
+                <p class="font-mono text-white/80 text-base leading-relaxed">
+                    Currently Under Development
+                </p>
+            </div>
+            
+            <div class="bg-white/5 border border-white/20 rounded-2xl p-6">
+                <p class="font-mono text-white/70 text-sm leading-relaxed mb-4">
+                    We're working hard to bring you the best Snake experience on mobile devices.
+                </p>
+                <div class="flex items-center justify-center gap-2 text-white/60 text-sm font-mono">
+                    <span>For now, please enjoy on</span>
+                    <i class="ri-computer-line text-lg"></i>
+                    <span class="font-bold text-white">Desktop</span>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <p class="font-mono text-white/50 text-xs">
+                    Thank you for your patience ❤️
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Desktop Content - Hidden on mobile -->
+    <div class="hidden md:block">
+        <div id="modal-bg"
         class="opacity-0 pointer-events-none transition-all duration-300 ease-in-out w-screen h-screen z-999 fixed bg-black/40 backdrop-blur-sm flex justify-center items-center">
     </div>
     <!-- alert -->
@@ -59,7 +98,7 @@
                         <p class="font-sans font-normal text-white/60 text-[10px] text-wrap w-[90%]">Change the speed of
                             the snake. 1 is slowest, 4 is the heighest, default 3</p>
                     </div>
-                    <div class="flex flex-row gap-4 items-center">
+                    <div class="flex flex-row gap-4 items-center"> 
                         <button id="speed-dec-btn"
                             class="cursor-pointer w-8 h-8 rounded-full border border-white/80 hover:border-white transition-all duration-300 ease-in-out"><i
                                 class="ri-subtract-line text-white"></i></button>
@@ -93,7 +132,7 @@
                         <p class="font-sans font-normal text-white/60 text-[10px] text-wrap w-[90%]">Reset the high
                             score to 0</p>
                     </div>
-                    <button
+                    <button id="hs-reset-btn"
                         class="cursor-pointer px-5 py-2 rounded-xl border border-white/60 text-white font-mono text-sm font-medium hover:border-white transition-all duration-300 ease-in-out">
                         Reset
                     </button>
@@ -103,17 +142,21 @@
                     <div class="flex flex-row items-center justify-between w-full">
                         <h2 class="font-mono font-medium text-white text-base px-2 flex gap-1.5"><i
                                 class="ri-history-line text-white -translate-y-0.5"></i>History</h2>
-                        <button
+                        <button id="clear-history-btn"
                             class="-translate-y-0.5 -translate-x-2 px-3 py-1 rounded-full bg-white/20 hover:bg-white/30 transition-all duration-300 ease-in-out cursor-pointer text-white font-mono text-[12px] font-medium">Clear</button>
                     </div>
-                    <div class="w-full rounded-2xl bg-white/10 h-[40vh]"></div>
+                    <div class="w-full rounded-2xl bg-white/10 h-[40vh] p-4">
+                        <ul id="history-list" class="list-none w-full h-full flex flex-col gap-4 justify-start items-center">
+                            <p class="w-full flex justify-center mt-8 text-base text-white/60 font-mono font-medium">No History Yet</p>
+                        </ul>
+                    </div>
                 </li>
             </ul>
         </div>
     </div>
     <!-- info modal -->
     <div id="info-modal"
-        class="opacity-0 pointer-events-none scale-70 transition-all duration-300 ease-in-out fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-9999 p-8 w-[60vw] h-[75vh] bg-black shadow rounded-4xl border border-white/30 flex flex-col overflow-y-auto">
+        class="overflow-y-hidden opacity-0 pointer-events-none scale-70 transition-all duration-300 ease-in-out fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-9999 p-8 w-[60vw] h-[82vh] bg-black shadow rounded-4xl border border-white/30 flex flex-col">
 
         <!-- Close Button -->
         <button id="close-info-btn"
@@ -252,6 +295,19 @@
                 </div>
             </div>
         </div>
+
+        <!-- Developer Credits Row -->
+        <div class="mt-4 bg-white rounded-2xl p-4 text-center">
+            <p class="font-mono text-black text-sm tracking-wide">
+                <span class="text-black/60">Crafted with</span> 
+                <span class="text-red-500 text-base">❤️</span> 
+                <span class="text-black/60">by</span> 
+                <span class="font-bold text-black">Rajbeer Saha</span>
+            </p>
+            <p class="font-mono text-black/50 text-xs mt-1">
+                Classic Snake • Modern Design • Pure JavaScript
+            </p>
+        </div>
     </div>
     <!-- main game -->
     <div class="w-screen h-screen bg-black p-15 flex flex-col gap-6">
@@ -283,6 +339,8 @@
             class="overflow-hidden w-[calc(100vw-120px)] h-[calc(100vh-184px)] rounded-[5px] border border-white/20 grid grid-cols-[repeat(auto-fill,minmax(50px,1fr))] grid-rows-[repeat(auto-fill,minmax(50px,1fr))]">
         </div>
     </div>
+    </div> <!-- End Desktop Content Wrapper -->
+    
     <script src="script.js"></script>
 </body>
 

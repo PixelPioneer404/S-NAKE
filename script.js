@@ -17,6 +17,9 @@ const speedIncBtn = document.querySelector('#speed-inc-btn')
 const speedMeter = document.querySelector('#speed-o-meter')
 const speedDecBtn = document.querySelector('#speed-dec-btn')
 const gridSwitch = document.querySelector('#grid-switch')
+const hsResetBtn = document.querySelector('#hs-reset-btn')
+const historyList = document.querySelector('#history-list')
+const clearHistoryBtn = document.querySelector('#clear-history-btn')
 
 let score = 0
 let highScore = parseInt(localStorage.getItem('highScore')) || 0
@@ -277,6 +280,122 @@ function generateRandomFood() {
     return newFruit
 }
 
+hsResetBtn.addEventListener('click', () => {
+    highScore = 0
+    localStorage.setItem('highScore', highScore)
+    highScoreEl.textContent = `High Score: ${highScore}`
+    hsResetBtn.style.opacity = 0.5
+    hsResetBtn.style.pointerEvents = 'none'
+})
+
+let historyArray = (() => {
+    const stored = localStorage.getItem('historyArray')
+    return (stored && stored !== '') ? JSON.parse(stored) : []
+})()
+let historyRowCount = historyArray.length ? historyArray[historyArray.length - 1].id + 1 : 1
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (historyRowCount > 1) historyList.innerHTML = ''
+    let currentHistoryArray = (() => {
+        const stored = localStorage.getItem('historyArray')
+        return (stored && stored !== '') ? JSON.parse(stored) : []
+    })()
+    currentHistoryArray.forEach(({ id, highScore, time }) => {
+        let li = document.createElement('li')
+        li.classList.add(...'w-full h-20 grid grid-cols-[20%_1fr] rounded-2xl overflow-hidden'.split(' '))
+        li.innerHTML =
+            `
+        <div class="bg-white w-full flex justify-center items-center text-black text-xl font-sans font-medium">${id}</div>
+        <div class="w-full bg-white/10 px-6 flex flex-row justify-between items-center">
+        <div class="text-white text-[18px] font-mono font-medium">${highScore}</div>
+        <div class="w-10 h-0.5 rounded-full bg-white"></div>
+        <div class="text-white text-[18px] font-mono font-medium">${time}</div>
+        </div>
+        `
+        historyList.appendChild(li)
+    })
+    console.log(historyArray)
+    
+    // Check and set button states on page load
+    // High Score Reset Button
+    if (highScore === 0) {
+        hsResetBtn.style.opacity = 0.5
+        hsResetBtn.style.pointerEvents = 'none'
+    } else {
+        hsResetBtn.style.opacity = 1
+        hsResetBtn.style.pointerEvents = 'auto'
+    }
+    
+    // Clear History Button
+    if (currentHistoryArray.length === 0) {
+        clearHistoryBtn.style.opacity = 0.5
+        clearHistoryBtn.style.pointerEvents = 'none'
+    } else {
+        clearHistoryBtn.style.opacity = 1
+        clearHistoryBtn.style.pointerEvents = 'auto'
+    }
+})
+
+function appendHistory() {
+    if (historyRowCount === 1) historyList.innerHTML = ''
+    let li = document.createElement('li')
+    li.classList.add(...'w-full h-20 grid grid-cols-[20%_1fr] rounded-2xl overflow-hidden'.split(' '))
+    historyArray = (() => {
+        const stored = localStorage.getItem('historyArray')
+        return (stored && stored !== '') ? JSON.parse(stored) : []
+    })()
+    const historyEl = {
+        id: historyRowCount,
+        highScore,
+        time: `${min}m ${String(sec).padStart(2, '0')}s`
+    }
+    console.log(`time outside: ${historyEl.time}`)
+    if (historyArray.length !== 0 && historyEl.highScore === historyArray[historyArray.length - 1].highScore) {
+        if (historyEl.time !== historyArray[historyArray.length - 1].time) {
+            console.log(`Updating time from ${historyArray[historyArray.length - 1].time} to ${historyEl.time}`)
+            historyArray[historyArray.length - 1].time = historyEl.time
+            localStorage.setItem('historyArray', JSON.stringify(historyArray))
+            let lastChildTextNode = historyList.lastElementChild.querySelector('.time-node')
+            if (lastChildTextNode) {
+                lastChildTextNode.textContent = historyEl.time
+            }
+        }
+    } else {
+        historyArray.push(historyEl)
+        localStorage.setItem('historyArray', JSON.stringify(historyArray))
+        li.innerHTML =
+            `
+            <div class="bg-white w-full flex justify-center items-center text-black text-xl font-sans font-medium">${historyRowCount}</div>
+            <div class="w-full bg-white/10 px-6 flex flex-row justify-between items-center">
+                <div class="text-white text-[18px] font-mono font-medium">${historyArray[historyArray.length - 1].highScore}</div>
+                <div class="w-10 h-0.5 rounded-full bg-white"></div>
+                <div class="time-node text-white text-[18px] font-mono font-medium">${historyArray[historyArray.length - 1].time}</div>
+            </div>
+        `
+        historyList.appendChild(li)
+    }
+    if (historyArray.length === 1) {
+        clearHistoryBtn.style.opacity = 1
+        clearHistoryBtn.style.pointerEvents = 'auto'
+    }
+    historyRowCount++
+    console.log(historyArray)
+}
+
+function clearHistory() {
+    localStorage.removeItem('historyArray')
+    historyArray = []
+    historyRowCount = 1
+    historyList.innerHTML =
+        `
+            <p class="w-full flex justify-center mt-8 text-base text-white/60 font-mono font-medium">No History Yet</p>
+        `
+        clearHistoryBtn.style.opacity = 0.5
+    clearHistoryBtn.style.pointerEvents = 'none'
+}
+
+clearHistoryBtn.addEventListener('click', clearHistory)
+
 function render() {
     //snake
     let head = null
@@ -294,6 +413,8 @@ function render() {
     else if (direction === 'down') {
         head = { x: snake[0].x + 1, y: snake[0].y }
     }
+
+    if (!boardGrid[`${head.x}-${head.y}`]?.classList.contains('head')) boardGrid[`${head.x}-${head.y}`]?.classList.add('head')
 
     if (isStarted) {
         pauseBtn.classList.remove('opacity-50', 'pointer-events-none')
@@ -323,6 +444,12 @@ function render() {
         highScore = score
         localStorage.setItem('highScore', `${highScore}`)
         highScoreEl.textContent = `High Score: ${highScore}`
+        
+        // Re-enable the high score reset button when high score increases from 0
+        if (highScore > 0) {
+            hsResetBtn.style.opacity = 1
+            hsResetBtn.style.pointerEvents = 'auto'
+        }
     }
 
     snake.unshift(head)
@@ -332,6 +459,7 @@ function render() {
     if (head.x < 0 || head.x > rows - 1 || head.y < 0 || head.y > cols - 1 || isCollide) {
         console.log('Collision detected!', 'Head:', head, 'Bounds:', rows, 'x', cols, 'isCollide:', isCollide)
         isAlertOpen = true
+        appendHistory()
         openAlert()
         resetTimer()
     }
@@ -340,6 +468,7 @@ function render() {
     snake.forEach((snakeCell) => {
         boardGrid[`${snakeCell.x}-${snakeCell.y}`]?.classList.add('fill')
     })
+
 }
 
 document.addEventListener('keydown', (e) => {
@@ -350,13 +479,18 @@ document.addEventListener('keydown', (e) => {
                 renderInterval = setInterval(() => {
                     render()
                 }, currentSpeed)
+                // Start timer when game starts
+                clearInterval(timerInterval)
+                timerInterval = setInterval(() => {
+                    runTimer()
+                }, 1000)
             }
         }
 
         if (e.key === 'ArrowUp' && direction !== 'down') direction = 'up'
         else if (e.key === 'ArrowDown' && direction !== 'up') direction = 'down'
         else if (e.key === 'ArrowLeft' && direction !== 'right') direction = 'left'
-        else if (e.key === 'ArrowRight'&& direction !== 'left') direction = 'right'
+        else if (e.key === 'ArrowRight' && direction !== 'left') direction = 'right'
     }
     if (e.key === 'Escape') {
         if (!isPaused && !isSettingsOpen) {
