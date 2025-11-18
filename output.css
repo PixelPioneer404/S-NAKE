@@ -8,7 +8,6 @@
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
     --color-red-500: oklch(63.7% 0.237 25.331);
-    --color-red-800: oklch(44.4% 0.177 26.899);
     --color-yellow-400: oklch(85.2% 0.199 91.936);
     --color-green-400: oklch(79.2% 0.209 151.711);
     --color-blue-400: oklch(70.7% 0.165 254.624);
@@ -586,17 +585,8 @@
   .rounded-\[5px\] {
     border-radius: 5px;
   }
-  .rounded-\[20px\] {
-    border-radius: 20px;
-  }
   .rounded-\[30px\] {
     border-radius: 30px;
-  }
-  .rounded-\[50px\] {
-    border-radius: 50px;
-  }
-  .rounded-\[px\] {
-    border-radius: px;
   }
   .rounded-full {
     border-radius: calc(infinity * 1px);
@@ -614,6 +604,9 @@
   .border-2 {
     border-style: var(--tw-border-style);
     border-width: 2px;
+  }
+  .border-\[\#D71921\] {
+    border-color: #D71921;
   }
   .border-white {
     border-color: var(--color-white);
